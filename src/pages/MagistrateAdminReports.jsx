@@ -12,7 +12,7 @@ function MagistrateAdminReports() {
 
   const fetchReports = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/magistrate-reports/admin/all", {
+      const res = await axios.get("https://ers-backend-f.onrender.com/api/magistrate-reports/admin/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -35,7 +35,7 @@ function MagistrateAdminReports() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/magistrate-reports/view/${id}`, {}, {
+      await axios.patch(`https://ers-backend-f.onrender.com/api/magistrate-reports/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("✅ Marked as Viewed");
@@ -133,7 +133,7 @@ function MagistrateAdminReports() {
     if (!window.confirm("Are you sure you want to delete ALL magistrate reports?")) return;
 
     try {
-      await axios.delete("http://localhost:5000/api/magistrate-reports/admin/clear-all", {
+      await axios.delete("https://ers-backend-f.onrender.com/api/magistrate-reports/admin/clear-all", {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("🧹 All magistrate reports cleared");
