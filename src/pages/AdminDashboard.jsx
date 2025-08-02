@@ -46,7 +46,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/auth/users', {
+      const res = await axios.get('https://ers-backend-f.onrender.com/api/auth/users', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUsers(res.data);
@@ -62,7 +62,7 @@ function AdminDashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/auth/user/${id}`, {
+      await axios.delete(`https://ers-backend-f.onrender.com/api/auth/user/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchUsers();
@@ -82,7 +82,7 @@ function AdminDashboard() {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/auth/user/${editUser._id}`, {
+      await axios.put(`https://ers-backend-f.onrender.com/api/auth/user/${editUser._id}`, {
         username: editUsername,
         password: editPassword
       }, {
