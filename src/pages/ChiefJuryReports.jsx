@@ -35,7 +35,7 @@ export default function ChiefJuryReports() {
   const fetchReports = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/jury-reports/chief/all?court=${encodeURIComponent(selectedCourt)}`,
+        `https://ers-backend-f.onrender.com/api/jury-reports/chief/all?court=${encodeURIComponent(selectedCourt)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -48,7 +48,7 @@ export default function ChiefJuryReports() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/jury-reports/chief/view/${id}`, {}, {
+      await axios.patch(`https://ers-backend-f.onrender.com/api/jury-reports/chief/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Report approved");
@@ -69,7 +69,7 @@ export default function ChiefJuryReports() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/jury-reports/chief/reject/${rejectModal.reportId}`,
+        `https://ers-backend-f.onrender.com/api/jury-reports/chief/reject/${rejectModal.reportId}`,
         { reason: rejectModal.reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

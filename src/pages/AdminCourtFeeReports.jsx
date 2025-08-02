@@ -35,7 +35,7 @@ export default function AdminCourtFeeReports() {
   const fetchReports = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/court-fees/admin/all?court=${encodeURIComponent(selectedCourt)}`,
+        `  https://ers-backend-f.onrender.com/api/court-fees/admin/all?court=${encodeURIComponent(selectedCourt)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -48,7 +48,7 @@ export default function AdminCourtFeeReports() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/court-fees/admin/view/${id}`, {}, {
+      await axios.patch(`  https://ers-backend-f.onrender.com/api/court-fees/admin/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Report approved");
@@ -69,7 +69,8 @@ export default function AdminCourtFeeReports() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/court-fees/admin/reject/${rejectModal.reportId}`,
+        `  https://ers-backend-f.onrender.com
+/api/court-fees/admin/reject/${rejectModal.reportId}`,
         { reason: rejectModal.reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

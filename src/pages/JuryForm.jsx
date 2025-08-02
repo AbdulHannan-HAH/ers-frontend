@@ -54,7 +54,7 @@ export default function JuryForm() {
     const id = params.get('id');
     if (id) {
       setEditingId(id);
-      axios.get(`http://localhost:5000/api/jury-reports/${id}`, {
+      axios.get(`https://ers-backend-f.onrender.com/api/jury-reports/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then((res) => {
         const data = res.data;
@@ -191,12 +191,12 @@ export default function JuryForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/jury-reports/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/jury-reports/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Updated");
       } else {
-        await axios.post("http://localhost:5000/api/jury-reports", payload, {
+        await axios.post("https://ers-backend-f.onrender.com/api/jury-reports", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Saved");
@@ -255,13 +255,13 @@ export default function JuryForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/jury-reports/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/jury-reports/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Report Finalized");
         setForm(prev => ({ ...prev, finalized: true }));
       } else {
-        const res = await axios.post("http://localhost:5000/api/jury-reports", payload, {
+        const res = await axios.post("https://ers-backend-f.onrender.com/api/jury-reports", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Report Finalized");

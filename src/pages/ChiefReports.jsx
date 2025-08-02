@@ -19,7 +19,7 @@ export default function ChiefReports() {
   const fetchReports = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/returns/chief/all?court=${encodeURIComponent(selectedCourt)}`,
+        `https://ers-backend-f.onrender.com/api/returns/chief/all?court=${encodeURIComponent(selectedCourt)}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
@@ -43,7 +43,7 @@ export default function ChiefReports() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/returns/chief/view/${id}`, {}, {
+      await axios.patch(`https://ers-backend-f.onrender.com/api/returns/chief/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("✅ Report approved");
@@ -61,7 +61,7 @@ export default function ChiefReports() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/returns/chief/reject/${selectedReport._id}`,
+        `https://ers-backend-f.onrender.com/api/returns/chief/reject/${selectedReport._id}`,
         { reason: rejectionReason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

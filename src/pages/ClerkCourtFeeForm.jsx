@@ -50,7 +50,7 @@ export default function ClerkCourtFeeForm() {
     const id = params.get('id');
     if (id) {
       setEditingId(id);
-      axios.get(`http://localhost:5000/api/court-fees/${id}`, {
+      axios.get(`https://ers-backend-f.onrender.com/api/court-fees/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then((res) => {
         setForm({
@@ -122,12 +122,12 @@ export default function ClerkCourtFeeForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/court-fees/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/court-fees/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Updated");
       } else {
-        await axios.post("http://localhost:5000/api/court-fees", payload, {
+        await axios.post("https://ers-backend-f.onrender.com/api/court-fees", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Saved");
@@ -157,13 +157,13 @@ export default function ClerkCourtFeeForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/court-fees/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/court-fees/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success(form.rejected ? "Report Resubmitted" : "Report Finalized");
         setForm(prev => ({ ...prev, finalized: true, rejected: false }));
       } else {
-        const res = await axios.post("http://localhost:5000/api/court-fees", payload, {
+        const res = await axios.post("https://ers-backend-f.onrender.com/api/court-fees", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Report Finalized");

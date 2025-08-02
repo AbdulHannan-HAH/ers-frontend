@@ -16,7 +16,7 @@ export default function ClerkCourtFeeMyReports() {
 
   const fetchReports = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/court-fees/my", {
+      const res = await axios.get("https://ers-backend-f.onrender.com/api/court-fees/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const filtered = res.data.filter(report => report.clerkCourt === user.circuitCourt);
@@ -160,7 +160,7 @@ export default function ClerkCourtFeeMyReports() {
 
   const handleSubmitTo = async (id, recipient) => {
     try {
-      await axios.patch(`http://localhost:5000/api/court-fees/submit/${id}`, 
+      await axios.patch(`https://ers-backend-f.onrender.com/api/court-fees/submit/${id}`, 
         { recipient },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -174,7 +174,7 @@ export default function ClerkCourtFeeMyReports() {
   const handleResubmit = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/court-fees/resubmit/${id}`,
+        `https://ers-backend-f.onrender.com/api/court-fees/resubmit/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

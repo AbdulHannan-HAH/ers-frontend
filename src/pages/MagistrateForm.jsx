@@ -44,7 +44,7 @@ export default function MagistrateForm() {
     const id = params.get('id');
     if (id) {
       setEditingId(id);
-      axios.get(`http://localhost:5000/api/magistrate-reports/${id}`, {
+      axios.get(`https://ers-backend-f.onrender.com/api/magistrate-reports/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then((res) => {
         setForm({
@@ -127,12 +127,12 @@ export default function MagistrateForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/magistrate-reports/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/magistrate-reports/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Updated");
       } else {
-        await axios.post("http://localhost:5000/api/magistrate-reports", payload, {
+        await axios.post("https://ers-backend-f.onrender.com/api/magistrate-reports", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Saved");
@@ -163,13 +163,13 @@ export default function MagistrateForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/magistrate-reports/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/magistrate-reports/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Report Finalized");
         setForm(prev => ({ ...prev, finalized: true }));
       } else {
-        const res = await axios.post("http://localhost:5000/api/magistrate-reports", payload, {
+        const res = await axios.post("https://ers-backend-f.onrender.com/api/magistrate-reports", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Report Finalized");

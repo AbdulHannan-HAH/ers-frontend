@@ -49,7 +49,7 @@ export default function CivilDocketForm() {
     const id = params.get('id');
     if (id) {
       setEditingId(id);
-      axios.get(`http://localhost:5000/api/civil-dockets/${id}`, {
+      axios.get(`https://ers-backend-f.onrender.com/api/civil-dockets/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then((res) => {
         setForm({
@@ -120,12 +120,12 @@ export default function CivilDocketForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/civil-dockets/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/civil-dockets/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Updated");
       } else {
-        await axios.post("http://localhost:5000/api/civil-dockets", payload, {
+        await axios.post("https://ers-backend-f.onrender.com/api/civil-dockets", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Saved");
@@ -155,13 +155,13 @@ export default function CivilDocketForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/civil-dockets/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/civil-dockets/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success(form.rejected ? "Docket Resubmitted" : "Docket Finalized");
         setForm(prev => ({ ...prev, finalized: true, rejected: false }));
       } else {
-        const res = await axios.post("http://localhost:5000/api/civil-dockets", payload, {
+        const res = await axios.post("https://ers-backend-f.onrender.com/api/civil-dockets", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Docket Finalized");

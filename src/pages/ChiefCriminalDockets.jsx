@@ -34,7 +34,7 @@ export default function ChiefCriminalDockets() {
   const fetchDockets = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/criminal-dockets/chief/all?court=${encodeURIComponent(selectedCourt)}`,
+        `https://ers-backend-f.onrender.com/api/criminal-dockets/chief/all?court=${encodeURIComponent(selectedCourt)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -47,7 +47,7 @@ export default function ChiefCriminalDockets() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/criminal-dockets/chief/view/${id}`, {}, {
+      await axios.patch(`https://ers-backend-f.onrender.com/api/criminal-dockets/chief/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Docket approved");
@@ -68,7 +68,7 @@ export default function ChiefCriminalDockets() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/criminal-dockets/chief/reject/${rejectModal.docketId}`,
+        `https://ers-backend-f.onrender.com/api/criminal-dockets/chief/reject/${rejectModal.docketId}`,
         { reason: rejectModal.reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

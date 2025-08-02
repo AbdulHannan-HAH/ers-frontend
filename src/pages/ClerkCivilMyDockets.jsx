@@ -16,7 +16,7 @@ export default function ClerkCivilMyDockets() {
 
   const fetchDockets = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/civil-dockets/my", {
+      const res = await axios.get("https://ers-backend-f.onrender.com/api/civil-dockets/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Filter by court and also exclude dockets marked as removed by clerk
@@ -133,7 +133,7 @@ export default function ClerkCivilMyDockets() {
 
   const handleSubmitTo = async (id, recipient) => {
     try {
-      await axios.patch(`http://localhost:5000/api/civil-dockets/submit/${id}`, 
+      await axios.patch(`https://ers-backend-f.onrender.com/api/civil-dockets/submit/${id}`, 
         { recipient },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -147,7 +147,7 @@ export default function ClerkCivilMyDockets() {
   const handleResubmit = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/civil-dockets/resubmit/${id}`,
+        `https://ers-backend-f.onrender.com/api/civil-dockets/resubmit/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -161,7 +161,7 @@ export default function ClerkCivilMyDockets() {
   const handleRemoveDocket = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/civil-dockets/remove/${id}`,
+        `https://ers-backend-f.onrender.com/api/civil-dockets/remove/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

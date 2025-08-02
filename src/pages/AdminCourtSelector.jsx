@@ -16,7 +16,7 @@ export default function AdminCourtSelector() {
   const fetchCourts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/courts", {
+      const res = await axios.get("  https://ers-backend-f.onrender.com/api/courts", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCourts(res.data.map((court) => court.name));
@@ -36,7 +36,7 @@ export default function AdminCourtSelector() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/courts",
+        "  https://ers-backend-f.onrender.com/api/courts",
         { name: newCourt.trim() },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -62,14 +62,14 @@ export default function AdminCourtSelector() {
       const courtToDelete = courts[index];
 
       // Fetch all courts to get the MongoDB ID
-      const res = await axios.get("http://localhost:5000/api/courts", {
+      const res = await axios.get("  https://ers-backend-f.onrender.com/api/courts", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const target = res.data.find((c) => c.name === courtToDelete);
 
       if (!target) return toast.error("Court not found!");
 
-      await axios.delete(`http://localhost:5000/api/courts/${target._id}`, {
+      await axios.delete(`  https://ers-backend-f.onrender.com/api/courts/${target._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

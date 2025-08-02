@@ -17,7 +17,7 @@ function CreateUser() {
   useEffect(() => {
     const fetchCourts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/courts", {
+        const res = await axios.get("https://ers-backend-f.onrender.com/api/courts", {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -36,7 +36,7 @@ function CreateUser() {
     setIsCreating(true);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/create', {
+      const res = await axios.post('https://ers-backend-f.onrender.com/api/auth/create', {
         username,
         role,
         circuitCourt: role === 'Circuit Clerk' ? court : null

@@ -47,7 +47,7 @@ export default function AdminJuryReports() {
   // Add this function to fetch user data
   const fetchUserData = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/auth/me", {
+      const res = await axios.get("  https://ers-backend-f.onrender.com/api/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
@@ -59,7 +59,7 @@ export default function AdminJuryReports() {
   const fetchReports = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/jury-reports/admin/all?court=${encodeURIComponent(selectedCourt)}`,
+        `  https://ers-backend-f.onrender.com/api/jury-reports/admin/all?court=${encodeURIComponent(selectedCourt)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -72,7 +72,7 @@ export default function AdminJuryReports() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/jury-reports/view/${id}`, {}, {
+      await axios.patch(`  https://ers-backend-f.onrender.com/api/jury-reports/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Report approved");
@@ -93,7 +93,7 @@ export default function AdminJuryReports() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/jury-reports/admin/reject/${rejectModal.reportId}`,
+        `  https://ers-backend-f.onrender.com/api/jury-reports/admin/reject/${rejectModal.reportId}`,
         { reason: rejectModal.reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );

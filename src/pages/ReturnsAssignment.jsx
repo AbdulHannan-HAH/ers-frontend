@@ -57,7 +57,7 @@ export default function ReturnsAssignment() {
     const id = params.get('id');
     if (id) {
       setEditingId(id);
-      axios.get(`http://localhost:5000/api/returns/${id}`, {
+      axios.get(`https://ers-backend-f.onrender.com/api/returns/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then((res) => {
         setForm({
@@ -139,12 +139,12 @@ export default function ReturnsAssignment() {
       };
       
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/returns/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/returns/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("✅ Draft Updated");
       } else {
-        await axios.post("http://localhost:5000/api/returns", payload, {
+        await axios.post("https://ers-backend-f.onrender.com/api/returns", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("✅ Draft Saved");
@@ -174,13 +174,13 @@ export default function ReturnsAssignment() {
       };
       
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/returns/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/returns/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("✅ Report Finalized");
         setForm(prev => ({ ...prev, finalized: true }));
       } else {
-        const res = await axios.post("http://localhost:5000/api/returns", payload, {
+        const res = await axios.post("https://ers-backend-f.onrender.com/api/returns", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("✅ Report Finalized");
@@ -201,7 +201,7 @@ export default function ReturnsAssignment() {
   const confirmSubmit = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/returns/submit/${editingId}`,
+        `https://ers-backend-f.onrender.com/api/returns/submit/${editingId}`,
         { recipient: submitRecipient },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -217,7 +217,7 @@ export default function ReturnsAssignment() {
   const handleResubmit = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/returns/resubmit/${editingId}`,
+        `https://ers-backend-f.onrender.com/api/returns/resubmit/${editingId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -230,7 +230,7 @@ export default function ReturnsAssignment() {
 
   const fetchReport = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/returns/${editingId}`, {
+      const res = await axios.get(`https://ers-backend-f.onrender.com/api/returns/${editingId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setForm({
@@ -256,7 +256,7 @@ export default function ReturnsAssignment() {
     try {
       setUploading(true);
       const res = await axios.post(
-        'http://localhost:5000/api/returns/upload',
+        'https://ers-backend-f.onrender.com/api/returns/upload',
         formData,
         {
           headers: {
@@ -281,7 +281,7 @@ export default function ReturnsAssignment() {
 
   const handleFileDelete = async (fileUrl) => {
     try {
-      await axios.delete('http://localhost:5000/api/returns/delete-file', {
+      await axios.delete('https://ers-backend-f.onrender.com/api/returns/delete-file', {
         data: { url: fileUrl, reportId: editingId },
         headers: { Authorization: `Bearer ${token}` }
       });

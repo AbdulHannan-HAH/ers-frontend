@@ -15,7 +15,7 @@ export default function ClerkCriminalMyDockets() {
 
   const fetchDockets = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/criminal-dockets/my", {
+      const res = await axios.get("https://ers-backend-f.onrender.com/api/criminal-dockets/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Filter by court and also exclude dockets marked as removed by clerk
@@ -132,7 +132,7 @@ export default function ClerkCriminalMyDockets() {
 
   const handleSubmitTo = async (id, recipient) => {
     try {
-      await axios.patch(`http://localhost:5000/api/criminal-dockets/submit/${id}`, 
+      await axios.patch(`https://ers-backend-f.onrender.com/api/criminal-dockets/submit/${id}`, 
         { recipient },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -146,7 +146,7 @@ export default function ClerkCriminalMyDockets() {
   const handleResubmit = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/criminal-dockets/resubmit/${id}`,
+        `https://ers-backend-f.onrender.com/api/criminal-dockets/resubmit/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -160,7 +160,7 @@ export default function ClerkCriminalMyDockets() {
   const handleRemoveDocket = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/criminal-dockets/remove/${id}`,
+        `https://ers-backend-f.onrender.com/api/criminal-dockets/remove/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

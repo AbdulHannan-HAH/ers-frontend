@@ -11,7 +11,7 @@ function ViewForms() {
 
   const fetchForms = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/returns/my", {
+      const res = await axios.get("  https://ers-backend-f.onrender.com/api/returns/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setForms(res.data);
@@ -27,7 +27,7 @@ function ViewForms() {
 
   const handleSendToAdmin = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/returns/send/${id}`, {}, {
+      await axios.patch(`  https://ers-backend-f.onrender.com/api/returns/send/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Sent to Admin ✅");

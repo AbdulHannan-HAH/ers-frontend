@@ -47,7 +47,7 @@ export default function CriminalDocketForm() {
     const id = params.get('id');
     if (id) {
       setEditingId(id);
-      axios.get(`http://localhost:5000/api/criminal-dockets/${id}`, {
+      axios.get(`https://ers-backend-f.onrender.com/api/criminal-dockets/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       }).then((res) => {
         setForm({
@@ -118,12 +118,12 @@ export default function CriminalDocketForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/criminal-dockets/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/criminal-dockets/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Updated");
       } else {
-        await axios.post("http://localhost:5000/api/criminal-dockets", payload, {
+        await axios.post("https://ers-backend-f.onrender.com/api/criminal-dockets", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Draft Saved");
@@ -153,13 +153,13 @@ export default function CriminalDocketForm() {
       };
 
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/criminal-dockets/${editingId}`, payload, {
+        await axios.put(`https://ers-backend-f.onrender.com/api/criminal-dockets/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success(form.rejected ? "Docket Resubmitted" : "Docket Finalized");
         setForm(prev => ({ ...prev, finalized: true, rejected: false }));
       } else {
-        const res = await axios.post("http://localhost:5000/api/criminal-dockets", payload, {
+        const res = await axios.post("https://ers-backend-f.onrender.com/api/criminal-dockets", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Docket Finalized");

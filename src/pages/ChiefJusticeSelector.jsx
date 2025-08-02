@@ -15,7 +15,7 @@ export default function ChiefJusticeCourtSelector() {
   const fetchCourts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/courts", {
+      const res = await axios.get("https://ers-backend-f.onrender.com/api/courts", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCourts(res.data.map((court) => court.name));

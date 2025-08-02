@@ -20,7 +20,7 @@ export default function ClerkMyReports() {
 
   const fetchReports = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/returns/my", {
+      const res = await axios.get("https://ers-backend-f.onrender.com/api/returns/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const filtered = res.data.filter(report =>
@@ -139,7 +139,7 @@ export default function ClerkMyReports() {
 
   const handleSubmitTo = async (id, recipient) => {
     try {
-      await axios.patch(`http://localhost:5000/api/returns/submit/${id}`,
+      await axios.patch(`https://ers-backend-f.onrender.com/api/returns/submit/${id}`,
         { recipient },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -153,7 +153,7 @@ export default function ClerkMyReports() {
   const handleResubmit = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/returns/resubmit/${id}`,
+        `https://ers-backend-f.onrender.com/returns/resubmit/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -167,7 +167,7 @@ export default function ClerkMyReports() {
   const handleRemoveReport = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/returns/remove/${id}`,
+        `https://ers-backend-f.onrender.com/api/returns/remove/${id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

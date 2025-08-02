@@ -34,7 +34,7 @@ export default function ChiefCivilDockets() {
   const fetchDockets = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/civil-dockets/chief/all?court=${encodeURIComponent(selectedCourt)}`,
+        `https://ers-backend-f.onrender.com/api/civil-dockets/chief/all?court=${encodeURIComponent(selectedCourt)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -47,7 +47,7 @@ export default function ChiefCivilDockets() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/civil-dockets/chief/view/${id}`, {}, {
+      await axios.patch(`https://ers-backend-f.onrender.com/api/civil-dockets/chief/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Docket approved");
@@ -68,7 +68,7 @@ export default function ChiefCivilDockets() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `http://localhost:5000/api/civil-dockets/chief/reject/${rejectModal.docketId}`,
+        `https://ers-backend-f.onrender.com/api/civil-dockets/chief/reject/${rejectModal.docketId}`,
         { reason: rejectModal.reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -88,7 +88,7 @@ export default function ChiefCivilDockets() {
     });
   };
 
-  
+
   // Date formatting function with error handling
 const formatDate = (date) => {
   try {
