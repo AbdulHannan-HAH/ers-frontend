@@ -35,7 +35,7 @@ export default function AdminCivilDockets() {
   const fetchDockets = async () => {
     try {
       const res = await axios.get(
-        `  https://ers-backend-f.onrender.com/api/civil-dockets/admin/all?court=${encodeURIComponent(selectedCourt)}`,
+        `https://ers-backend-f.onrender.com/api/civil-dockets/admin/all?court=${encodeURIComponent(selectedCourt)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -48,7 +48,7 @@ export default function AdminCivilDockets() {
 
   const markAsViewed = async (id) => {
     try {
-      await axios.patch(`  https://ers-backend-f.onrender.com/api/civil-dockets/view/${id}`, {}, {
+      await axios.patch(`https://ers-backend-f.onrender.com/api/civil-dockets/view/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Docket approved");
@@ -69,8 +69,7 @@ export default function AdminCivilDockets() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `  https://ers-backend-f.onrender.com
-/api/civil-dockets/admin/reject/${rejectModal.docketId}`,
+        `https://ers-backend-f.onrender.com/api/civil-dockets/admin/reject/${rejectModal.docketId}`,
         { reason: rejectModal.reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
