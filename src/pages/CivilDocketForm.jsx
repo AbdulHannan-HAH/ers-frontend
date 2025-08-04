@@ -191,7 +191,7 @@ export default function CivilDocketForm() {
     console.log('Uploading file:', selectedFile.name); // Debug log
     
     const res = await axios.post(
-      '/api/civil-dockets/upload',
+      'https://ers-backend-f.onrender.com/api/civil-dockets/upload',
       formData,
       {
         headers: {
