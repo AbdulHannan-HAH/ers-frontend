@@ -185,40 +185,52 @@ export default function MagistrateForm() {
 
 const [uploading, setUploading] = useState(false);
 const [selectedFile, setSelectedFile] = useState(null);
-const handleFileUpload = async () => {
+
+ const handleFileUpload = async () => {
+  const token = localStorage.getItem("token"); // ✅ Get token from localStorage
+
+  if (!token) {
+    toast.error("No token found. Please login again.");
+    return;
+  }
+
   if (!selectedFile) {
     toast.warning("Please select a file first");
     return;
   }
 
   const formData = new FormData();
-  formData.append('file', selectedFile);
-  formData.append('reportId', editingId || form._id);
+  formData.append("file", selectedFile);
+  formData.append("docketId", editingId || form._id);
 
   try {
     setUploading(true);
+    console.log("Uploading file:", selectedFile.name);
+    console.log("Token being used:", token);
+
     const res = await axios.post(
-      `/api/magistrate-reports/upload`,
+      "https://ers-backend-f.onrender.com/api/magistrate-reports/upload",
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // ✅ Token attached
         },
-        timeout: 30000
+        timeout: 30000,
       }
     );
 
-    console.log('Upload response:', res);
+    console.log("Upload response:", res.data);
 
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      attachments: [...(prev.attachments || []), res.data.file]
+      attachments: [...(prev.attachments || []), res.data.file],
     }));
     toast.success("File uploaded successfully");
     setSelectedFile(null);
   } catch (err) {
-    console.error('Upload error:', err);
+    console.error("Upload error:", err);
+    console.error("Error response:", err.response);
     toast.error(err.response?.data?.error || "Failed to upload file");
   } finally {
     setUploading(false);
@@ -226,11 +238,11 @@ const handleFileUpload = async () => {
 };
 const handleFileDelete = async (fileUrl) => {
   try {
-    await axios.delete(`/api/magistrate-reports/delete-file`, {
-      data: { url: fileUrl, reportId: editingId || form._id },
+    await axios.delete(`https://ers-backend-f.onrender.com/api/magistrate-reports/delete-file`, {
+      data: { url: fileUrl, docketId: editingId || form._id },
       headers: { Authorization: `Bearer ${token}` }
     });
-    
+
     setForm(prev => ({
       ...prev,
       attachments: prev.attachments.filter(file => file.url !== fileUrl)
@@ -240,6 +252,8 @@ const handleFileDelete = async (fileUrl) => {
     toast.error("Failed to delete file");
   }
 };
+
+
 
 
   
