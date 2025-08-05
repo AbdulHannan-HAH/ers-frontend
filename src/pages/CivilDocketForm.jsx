@@ -227,21 +227,22 @@ export default function CivilDocketForm() {
   }
 };
   const handleFileDelete = async (fileUrl) => {
-    try {
-      await axios.delete(`/api/civil-dockets/delete-file`, {
-        data: { url: fileUrl, docketId: editingId || form._id },
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      setForm(prev => ({
-        ...prev,
-        attachments: prev.attachments.filter(file => file.url !== fileUrl)
-      }));
-      toast.success("File deleted successfully");
-    } catch (err) {
-      toast.error("Failed to delete file");
-    }
-  };
+  try {
+    await axios.delete(`https://ers-backend-f.onrender.com/api/civil-dockets/delete-file`, {
+      data: { url: fileUrl, docketId: editingId || form._id },
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    setForm(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter(file => file.url !== fileUrl)
+    }));
+    toast.success("File deleted successfully");
+  } catch (err) {
+    toast.error("Failed to delete file");
+  }
+};
+
 
 
 
