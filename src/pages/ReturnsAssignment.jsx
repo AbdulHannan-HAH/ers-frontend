@@ -242,20 +242,13 @@ export default function ReturnsAssignment() {
       toast.error("❌ Failed to load report");
     }
   };
-
-  const handleFileUpload = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    toast.error("No token found. Please login again.");
-    return;
-  }
-
+const handleFileUpload = async () => {
   if (!selectedFile) {
     toast.warning("Please select a file first");
     return;
   }
 
-  // Validate file type
+  // Validate file type client-side first
   const allowedTypes = [
     'application/pdf',
     'application/msword',
@@ -264,14 +257,12 @@ export default function ReturnsAssignment() {
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-powerpoint',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'text/plain',
-    'text/csv',
     'image/jpeg',
     'image/png'
   ];
 
   if (!allowedTypes.includes(selectedFile.type)) {
-    toast.error("Unsupported file type. Please upload PDF, Word, Excel, or image files.");
+    toast.error("Unsupported file type. Please upload PDF, Word, Excel, PowerPoint, or image files.");
     return;
   }
 
@@ -282,26 +273,28 @@ export default function ReturnsAssignment() {
   try {
     setUploading(true);
     const res = await axios.post(
-      "https://ers-backend-f.onrender.com/api/returns/upload",
+      "/api/returns/upload",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
-        timeout: 30000,
       }
     );
 
-    setForm((prev) => ({
+    if (res.data.error) {
+      throw new Error(res.data.error);
+    }
+
+    setForm(prev => ({
       ...prev,
       attachments: [...(prev.attachments || []), res.data.file],
     }));
     toast.success("File uploaded successfully");
-    setSelectedFile(null);
   } catch (err) {
-    console.error("Upload error:", err);
-    toast.error(err.response?.data?.error || "Failed to upload file");
+    let message = err.response?.data?.error || err.message || "Upload failed";
+    toast.error(message);
   } finally {
     setUploading(false);
   }
