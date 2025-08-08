@@ -244,8 +244,7 @@ export default function ReturnsAssignment() {
   };
 
   const handleFileUpload = async () => {
-  const token = localStorage.getItem("token"); // ✅ Get token from localStorage
-
+  const token = localStorage.getItem("token");
   if (!token) {
     toast.error("No token found. Please login again.");
     return;
@@ -256,28 +255,43 @@ export default function ReturnsAssignment() {
     return;
   }
 
+  // Validate file type
+  const allowedTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/plain',
+    'text/csv',
+    'image/jpeg',
+    'image/png'
+  ];
+
+  if (!allowedTypes.includes(selectedFile.type)) {
+    toast.error("Unsupported file type. Please upload PDF, Word, Excel, or image files.");
+    return;
+  }
+
   const formData = new FormData();
   formData.append("file", selectedFile);
   formData.append("docketId", editingId || form._id);
 
   try {
     setUploading(true);
-    console.log("Uploading file:", selectedFile.name);
-    console.log("Token being used:", token);
-
     const res = await axios.post(
       "https://ers-backend-f.onrender.com/api/returns/upload",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // ✅ Token attached
+          Authorization: `Bearer ${token}`,
         },
         timeout: 30000,
       }
     );
-
-    console.log("Upload response:", res.data);
 
     setForm((prev) => ({
       ...prev,
@@ -287,7 +301,6 @@ export default function ReturnsAssignment() {
     setSelectedFile(null);
   } catch (err) {
     console.error("Upload error:", err);
-    console.error("Error response:", err.response);
     toast.error(err.response?.data?.error || "Failed to upload file");
   } finally {
     setUploading(false);
@@ -642,11 +655,12 @@ export default function ReturnsAssignment() {
           <div className="card-body">
             <div className="mb-3">
               <input
-                type="file"
-                className="form-control"
-                onChange={(e) => setSelectedFile(e.target.files[0])}
-                disabled={form.finalized && !form.rejected}
-              />
+  type="file"
+  className="form-control"
+  onChange={(e) => setSelectedFile(e.target.files[0])}
+  disabled={form.finalized && !form.rejected}
+  accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.jpg,.jpeg,.png"
+/>
               <button
                 className="btn btn-secondary mt-2"
                 onClick={handleFileUpload}
