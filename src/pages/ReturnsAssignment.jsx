@@ -243,26 +243,15 @@ export default function ReturnsAssignment() {
     }
   };
 const handleFileUpload = async () => {
-  if (!selectedFile) {
-    toast.warning("Please select a file first");
+  const token = localStorage.getItem("token"); // ✅ Get token from localStorage
+
+  if (!token) {
+    toast.error("No token found. Please login again.");
     return;
   }
 
-  // Validate file type client-side first
-  const allowedTypes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/vnd.ms-powerpoint',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'image/jpeg',
-    'image/png'
-  ];
-
-  if (!allowedTypes.includes(selectedFile.type)) {
-    toast.error("Unsupported file type. Please upload PDF, Word, Excel, PowerPoint, or image files.");
+  if (!selectedFile) {
+    toast.warning("Please select a file first");
     return;
   }
 
@@ -272,29 +261,33 @@ const handleFileUpload = async () => {
 
   try {
     setUploading(true);
+    console.log("Uploading file:", selectedFile.name);
+    console.log("Token being used:", token);
+
     const res = await axios.post(
-      "/api/returns/upload",
+      "https://ers-backend-f.onrender.com/api/returns/upload",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // ✅ Token attached
         },
+        timeout: 30000,
       }
     );
 
-    if (res.data.error) {
-      throw new Error(res.data.error);
-    }
+    console.log("Upload response:", res.data);
 
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       attachments: [...(prev.attachments || []), res.data.file],
     }));
     toast.success("File uploaded successfully");
+    setSelectedFile(null);
   } catch (err) {
-    let message = err.response?.data?.error || err.message || "Upload failed";
-    toast.error(message);
+    console.error("Upload error:", err);
+    console.error("Error response:", err.response);
+    toast.error(err.response?.data?.error || "Failed to upload file");
   } finally {
     setUploading(false);
   }
