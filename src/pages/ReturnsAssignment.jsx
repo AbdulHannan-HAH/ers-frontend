@@ -641,12 +641,11 @@ const handleFileUpload = async () => {
           <div className="card-body">
             <div className="mb-3">
               <input
-  type="file"
-  className="form-control"
-  onChange={(e) => setSelectedFile(e.target.files[0])}
-  disabled={form.finalized && !form.rejected}
-  accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.jpg,.jpeg,.png"
-/>
+        type="file"
+        className="form-control"
+        onChange={(e) => setSelectedFile(e.target.files[0])}
+        disabled={form.finalized}
+      />
               <button
                 className="btn btn-secondary mt-2"
                 onClick={handleFileUpload}
