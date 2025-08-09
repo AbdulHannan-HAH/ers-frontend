@@ -637,51 +637,52 @@ const handleFileUpload = async () => {
 
         {/* File Attachments Section */}
         <div className="card mt-3">
-          <div className="card-header">Attachments</div>
-          <div className="card-body">
-            <div className="mb-3">
-              <input
+  <div className="card-header">Attachments</div>
+  <div className="card-body">
+    <div className="mb-3">
+      <input
         type="file"
         className="form-control"
         onChange={(e) => setSelectedFile(e.target.files[0])}
         disabled={form.finalized}
       />
-              <button
-                className="btn btn-secondary mt-2"
-                onClick={handleFileUpload}
-                disabled={!selectedFile || (form.finalized && !form.rejected) || uploading}
-              >
-                {uploading ? 'Uploading...' : 'Upload File'}
-              </button>
-            </div>
+      <button
+        className="btn btn-secondary mt-2"
+        onClick={handleFileUpload}
+        disabled={!selectedFile || form.finalized || uploading}
+      >
+        {uploading ? 'Uploading...' : 'Upload File'}
+      </button>
+    </div>
 
-            {form.attachments?.length > 0 && (
-              <div className="mt-3">
-                <h6>Uploaded Files:</h6>
-                <ul className="list-group">
-                  {form.attachments.map((file, index) => (
-                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                      <a 
-                        href={file.url.startsWith('http') ? file.url : `${window.location.origin}${file.url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {file.originalname}
-                      </a>
-                      <button 
-                        className="btn btn-sm btn-danger"
-                        onClick={() => handleFileDelete(file.url)}
-                        disabled={form.finalized && !form.rejected}
-                      >
-                        Delete
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
+    {form.attachments?.length > 0 && (
+      <div className="mt-3">
+        <h6>Uploaded Files:</h6>
+        <ul className="list-group">
+          {form.attachments.map((file, index) => (
+            <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+              <a 
+                href={file.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                {file.originalname || file.filename || `File ${index + 1}`}
+              </a>
+              {!form.finalized && (
+                <button 
+                  className="btn btn-sm btn-danger"
+                  onClick={() => handleFileDelete(file.url)}
+                >
+                  Delete
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</div>
 
         <div className="d-flex gap-3 justify-content-center mt-4">
           {!form.finalized && (
