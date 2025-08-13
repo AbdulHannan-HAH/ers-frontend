@@ -243,13 +243,6 @@ export default function ReturnsAssignment() {
     }
   };
 const handleFileUpload = async () => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    toast.error("No token found. Please login again.");
-    return;
-  }
-
   if (!selectedFile) {
     toast.warning("Please select a file first");
     return;
@@ -261,6 +254,8 @@ const handleFileUpload = async () => {
 
   try {
     setUploading(true);
+    console.log("Attempting to upload file:", selectedFile.name);
+    
     const res = await axios.post(
       "https://ers-backend-f.onrender.com/api/returns/upload",
       formData,
@@ -269,32 +264,44 @@ const handleFileUpload = async () => {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
-        timeout: 30000,
+        timeout: 10000,
       }
     );
 
-    if (res.data.file?.url) {
+    console.log("Full response:", res); // Log complete response
+    
+    if (res.data?.file?.url) {
       setForm(prev => ({
         ...prev,
-        attachments: [...(prev.attachments || []), {
-          ...res.data.file,
-          // Ensure we have originalname for display
-          originalname: selectedFile.name
-        }]
+        attachments: [...(prev.attachments || []), res.data.file]
       }));
       toast.success("File uploaded successfully");
-      setSelectedFile(null);
     } else {
-      toast.error("Invalid file response from server");
+      console.error("Unexpected response format:", res.data);
+      toast.error(`Server response: ${JSON.stringify(res.data)}`);
     }
   } catch (err) {
-    console.error("Upload error:", err);
-    toast.error(err.response?.data?.error || "Failed to upload file");
+    console.error("Upload error details:", {
+      error: err,
+      response: err.response,
+      message: err.message
+    });
+    
+    let errorMsg = "Failed to upload file";
+    if (err.response) {
+      errorMsg = err.response.data?.error || 
+                err.response.data?.message || 
+                `Server responded with ${err.response.status}`;
+    } else if (err.message.includes("timeout")) {
+      errorMsg = "Upload timed out. Please try again.";
+    }
+    
+    toast.error(errorMsg);
   } finally {
     setUploading(false);
+    setSelectedFile(null);
   }
-};
-  const handleFileDelete = async (fileUrl) => {
+};  const handleFileDelete = async (fileUrl) => {
   try {
     await axios.delete(`https://ers-backend-f.onrender.com/api/returns/delete-file`, {
       data: { url: fileUrl, docketId: editingId || form._id },
