@@ -302,62 +302,67 @@ const handleFileUpload = async () => {
 
 
   const generatePDF = () => {
-    if (form.cases.length === 0) {
-      toast.warning("No cases to generate PDF");
-      return;
-    }
+  if (form.cases.length === 0) {
+    toast.warning("No cases to generate PDF");
+    return;
+  }
 
-    const doc = new jsPDF('landscape');
-    doc.setFontSize(14);
+  const doc = new jsPDF('landscape');
+  
+  // Header
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, 20, { align: "center" });
+  doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, 28, { align: "center" });
+
+  // Report Info
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.text(`COURT: ${form.circuitCourt || '-'}`, 14, 36);
+  doc.text(`TERM: ${form.term || '-'} ${form.year || ''}`, 14, 44);
+  doc.text(`JUDGE: ${form.judgeName || '-'}`, 14, 52);
+  doc.text(`CLERK: ${user.username || '-'}`, 14, 60);
+
+  // Separate cases by type
+  const criminalCases = form.cases.filter(c => c.caseType === "Criminal");
+  const civilCases = form.cases.filter(c => c.caseType === "Civil");
+
+  let startY = 74; // Initial Y position for tables
+
+  // Criminal Cases Section
+  if (criminalCases.length > 0) {
     doc.setFont("helvetica", "bold");
-    doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, 20, { align: "center" });
-    doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, 28, { align: "center" });
-
     doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    doc.text(`COURT: ${form.circuitCourt || '-'}`, 14, 36);
-    doc.text(`TERM: ${form.term || '-'} ${form.year || ''}`, 14, 44);
-    doc.text(`JUDGE: ${form.judgeName || '-'}`, 14, 52);
-    doc.text(`CLERK: ${user.username || '-'}`, 14, 60);
+    doc.text("SUMMARY CASE REPORTING FOR CRIMINAL CASES:", doc.internal.pageSize.width / 2, startY, { align: "center" });
+    startY += 8;
 
-    const caseType = form.cases?.[0]?.caseType?.toUpperCase() || 'CASES';
-    const dynamicLabel = caseType === "CIVIL" ? "ACTION" : "CRIME";
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text(`SUMMARY CASE REPORTING FOR ${caseType} CASES:`, doc.internal.pageSize.width / 2, 68, { align: "center" });
-
-    const tableBody = form.cases.map((c, i) => {
+    const criminalTableBody = criminalCases.map((c, i) => {
       const juryParts = (c.juryInfo || '').split(',');
       const feeParts = (c.costFineAmount || '').split(',');
-
-      const juryColumn = c.caseType === "Civil"
-        ? `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`
-        : `${juryParts[0] || 'NONE'}`;
 
       return [
         i + 1,
         c.caseTitle || "-",
         c.crimeOrAction || "-",
         c.disposition || "-",
-        juryColumn,
+        juryParts[0] || 'NONE',
         feeParts.join(' ') || '-',
         c.remarks || "-"
       ];
     });
 
     doc.autoTable({
-      startY: 74,
+      startY: startY,
       head: [[
         "No.",
         "Case Title",
-        dynamicLabel,
+        "Crime",
         "Disposition",
-        "Jury Panel / Grand Jury / Petit Jury / Ref#",
+        "Jury Info",
         "Costs/Fees/Fines/ Amount and Receipt#",
         "Remarks"
       ]],
-      body: tableBody,
+      body: criminalTableBody,
       styles: {
         fontSize: 10,
         cellPadding: 3,
@@ -384,8 +389,74 @@ const handleFileUpload = async () => {
       tableWidth: 'wrap'
     });
 
-    doc.save(`ReturnsReport-${form.term}-${form.year}.pdf`);
-  };
+    startY = doc.lastAutoTable.finalY + 10;
+  }
+
+  // Civil Cases Section
+  if (civilCases.length > 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("SUMMARY CASE REPORTING FOR CIVIL CASES:", doc.internal.pageSize.width / 2, startY, { align: "center" });
+    startY += 8;
+
+    const civilTableBody = civilCases.map((c, i) => {
+      const juryParts = (c.juryInfo || '').split(',');
+      const feeParts = (c.costFineAmount || '').split(',');
+
+      const juryColumn = `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`;
+
+      return [
+        i + 1,
+        c.caseTitle || "-",
+        c.crimeOrAction || "-",
+        c.disposition || "-",
+        juryColumn,
+        feeParts.join(' ') || '-',
+        c.remarks || "-"
+      ];
+    });
+
+    doc.autoTable({
+      startY: startY,
+      head: [[
+        "No.",
+        "Case Title",
+        "Action",
+        "Disposition",
+        "Jury Panel / Ref#",
+        "Costs/Fees/Fines/ Amount and Receipt#",
+        "Remarks"
+      ]],
+      body: civilTableBody,
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+        valign: 'middle',
+        lineColor: [0, 0, 0],
+        lineWidth: 0.25
+      },
+      headStyles: {
+        fillColor: [30, 80, 200],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 12 },
+        1: { halign: 'center', cellWidth: 40 },
+        2: { halign: 'center', cellWidth: 30 },
+        3: { halign: 'center', cellWidth: 30 },
+        4: { halign: 'center', cellWidth: 50 },
+        5: { halign: 'center', cellWidth: 40 },
+        6: { halign: 'center', cellWidth: 50 }
+      },
+      margin: { left: 10, right: 10 },
+      tableWidth: 'wrap'
+    });
+  }
+
+  doc.save(`ReturnsReport-${form.term}-${form.year}.pdf`);
+};
 
   const isCivil = currentCase.caseType === "Civil";
   const caseLabel = isCivil ? "Action" : "Crime";
