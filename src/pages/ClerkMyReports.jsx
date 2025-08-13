@@ -185,7 +185,7 @@ const handleDownloadPDF = (report) => {
         halign: 'center'
       },
       columnStyles: {
-       0: { halign: 'center', cellWidth: 12 },
+        0: { halign: 'center', cellWidth: 12 },
         1: { halign: 'center', cellWidth: 40 },
         2: { halign: 'center', cellWidth: 30 },
         3: { halign: 'center', cellWidth: 60 },
