@@ -51,59 +51,63 @@ export default function ClerkMyReports() {
     }
   }, [searchTerm, reports]);
 
-  const handleDownloadPDF = (report) => {
-    const doc = new jsPDF('landscape');
+const handleDownloadPDF = (report) => {
+  const doc = new jsPDF('landscape');
 
-    doc.setFontSize(14);
+  // Header
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, 20, { align: "center" });
+  doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, 28, { align: "center" });
+
+  // Report Info
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.text(`COURT: ${report.circuitCourt || '-'}`, 14, 36);
+  doc.text(`TERM: ${report.term || '-'} ${report.year || ''}`, 14, 44);
+  doc.text(`JUDGE: ${report.judgeName || '-'}`, 14, 52);
+  doc.text(`CLERK: ${user.username || '-'}`, 14, 60);
+
+  // Separate cases by type
+  const criminalCases = report.cases?.filter(c => c.caseType === "Criminal") || [];
+  const civilCases = report.cases?.filter(c => c.caseType === "Civil") || [];
+
+  let startY = 74; // Initial Y position for tables
+
+  // Criminal Cases Section - Only show if there are criminal cases
+  if (criminalCases.length > 0) {
     doc.setFont("helvetica", "bold");
-    doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, 20, { align: "center" });
-    doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, 28, { align: "center" });
-
     doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-    doc.text(`COURT: ${report.circuitCourt || '-'}`, 14, 36);
-    doc.text(`TERM: ${report.term || '-'} ${report.year || ''}`, 14, 44);
-    doc.text(`JUDGE: ${report.judgeName || '-'}`, 14, 52);
-    doc.text(`CLERK: ${user.username || '-'}`, 14, 60);
+    doc.text("SUMMARY CASE REPORTING FOR CRIMINAL CASES:", doc.internal.pageSize.width / 2, startY, { align: "center" });
+    startY += 8;
 
-    const caseType = report.cases?.[0]?.caseType?.toUpperCase() || 'CASES';
-    const dynamicLabel = caseType === "CIVIL" ? "ACTION" : "CRIME";
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text(`SUMMARY CASE REPORTING FOR ${caseType} CASES:`, doc.internal.pageSize.width / 2, 68, { align: "center" });
-
-    const tableBody = report.cases.map((c, i) => {
+    const criminalTableBody = criminalCases.map((c, i) => {
       const juryParts = (c.juryInfo || '').split(',');
       const feeParts = (c.costFineAmount || '').split(',');
-
-      const juryColumn = c.caseType === "Civil"
-        ? `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`
-        : `${juryParts[0] || 'NONE'}`;
 
       return [
         i + 1,
         c.caseTitle || "-",
         c.crimeOrAction || "-",
         c.disposition || "-",
-        juryColumn,
+        juryParts[0] || 'NONE',
         feeParts.join(' ') || '-',
         c.remarks || "-"
       ];
     });
 
     doc.autoTable({
-      startY: 74,
+      startY: startY,
       head: [[
         "No.",
         "Case Title",
-        dynamicLabel,
+        "Crime",
         "Disposition",
-        "Jury Panel / Grand Jury / Petit Jury / Ref#",
+        "Jury Info",
         "Costs/Fees/Fines/ Amount and Receipt#",
         "Remarks"
       ]],
-      body: tableBody,
+      body: criminalTableBody,
       styles: {
         fontSize: 10,
         cellPadding: 3,
@@ -121,18 +125,81 @@ export default function ClerkMyReports() {
         0: { halign: 'center', cellWidth: 12 },
         1: { halign: 'center', cellWidth: 40 },
         2: { halign: 'center', cellWidth: 30 },
-        3: { halign: 'center', cellWidth: 30 },
-        4: { halign: 'center', cellWidth: 50 },
-        5: { halign: 'center', cellWidth: 40 },
-        6: { halign: 'center', cellWidth: 50 }
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
       },
       margin: { left: 10, right: 10 },
       tableWidth: 'wrap'
     });
 
-    doc.save(`ReturnsReport-${report.term}-${report.year}.pdf`);
-  };
+    startY = doc.lastAutoTable.finalY + 15;
+  }
 
+  // Civil Cases Section - Only show if there are civil cases
+  if (civilCases.length > 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("SUMMARY CASE REPORTING FOR CIVIL CASES:", doc.internal.pageSize.width / 2, startY, { align: "center" });
+    startY += 8;
+
+    const civilTableBody = civilCases.map((c, i) => {
+      const juryParts = (c.juryInfo || '').split(',');
+      const feeParts = (c.costFineAmount || '').split(',');
+
+      return [
+        i + 1,
+        c.caseTitle || "-",
+        c.crimeOrAction || "-",
+        c.disposition || "-",
+        `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`,
+        feeParts.join(' ') || '-',
+        c.remarks || "-"
+      ];
+    });
+
+    doc.autoTable({
+      startY: startY,
+      head: [[
+        "No.",
+        "Case Title",
+        "Action",
+        "Disposition",
+        "Jury Panel / Ref#",
+        "Costs/Fees/Fines/ Amount and Receipt#",
+        "Remarks"
+      ]],
+      body: civilTableBody,
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+        valign: 'middle',
+        lineColor: [0, 0, 0],
+        lineWidth: 0.25
+      },
+      headStyles: {
+        fillColor: [30, 80, 200],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      columnStyles: {
+       0: { halign: 'center', cellWidth: 12 },
+        1: { halign: 'center', cellWidth: 40 },
+        2: { halign: 'center', cellWidth: 30 },
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
+      },
+      margin: { left: 10, right: 10 },
+      tableWidth: 'wrap'
+    });
+  }
+
+  doc.save(`ReturnsReport-${report.term}-${report.year}.pdf`);
+};
   const handleEdit = (id) => {
     navigate(`/clerk/returns?id=${id}`);
   };

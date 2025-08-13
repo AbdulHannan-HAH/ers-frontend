@@ -80,75 +80,80 @@ export default function ChiefReports() {
   };
 
   const generateCombinedPDF = () => {
-    const validReports = reports.filter(report => !report.rejected);
-    if (validReports.length === 0) {
-      toast.warning("No valid reports to download");
-      return;
-    }
+  const validReports = reports.filter(report => !report.rejected);
+  if (validReports.length === 0) {
+    toast.warning("No valid reports to download");
+    return;
+  }
 
-    const doc = new jsPDF('landscape');
-    let y = 20;
+  const doc = new jsPDF('landscape');
+  let y = 20;
 
-    validReports.forEach((report, index) => {
-      doc.setFontSize(14);
+  validReports.forEach((report, index) => {
+    // Header Section
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, y, { align: "center" });
+    y += 8;
+    doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, y, { align: "center" });
+
+    // Report Info
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    y += 8;
+    doc.text(`COURT: ${report.circuitCourt || '-'}`, 14, y);
+    y += 8;
+    doc.text(`TERM: ${report.term || '-'} ${report.year || ''}`, 14, y);
+    y += 8;
+    doc.text(`JUDGE: ${report.judgeName || '-'}`, 14, y);
+    y += 8;
+    doc.text(`CLERK: ${report.submittedBy?.username || '-'}`, 14, y);
+    y += 8;
+    doc.text(`STATUS: ${report.chiefViewed ? 'APPROVED' : 'PENDING'}`, 14, y);
+
+    y += 10;
+    doc.setFont("helvetica", "bold");
+    doc.text(`Report #${index + 1}`, 14, y);
+    y += 6;
+
+    // Separate cases by type
+    const criminalCases = report.cases?.filter(c => c.caseType === "Criminal") || [];
+    const civilCases = report.cases?.filter(c => c.caseType === "Civil") || [];
+
+    // Criminal Cases Section - Only show if there are criminal cases
+    if (criminalCases.length > 0) {
       doc.setFont("helvetica", "bold");
-      doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, y, { align: "center" });
-      y += 8;
-      doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, y, { align: "center" });
-
       doc.setFontSize(12);
-      doc.setFont("helvetica", "normal");
+      doc.text("SUMMARY CASE REPORTING FOR CRIMINAL CASES:", doc.internal.pageSize.width / 2, y, { align: "center" });
       y += 8;
-      doc.text(`COURT: ${report.circuitCourt || '-'}`, 14, y);
-      y += 8;
-      doc.text(`TERM: ${report.term || '-'} ${report.year || ''}`, 14, y);
-      y += 8;
-      doc.text(`JUDGE: ${report.judgeName || '-'}`, 14, y);
-      y += 8;
-      doc.text(`CLERK: ${report.submittedBy?.username || '-'}`, 14, y);
-      y += 8;
-      doc.text(`STATUS: ${report.chiefViewed ? 'APPROVED' : 'PENDING'}`, 14, y);
 
-      y += 10;
-      doc.setFont("helvetica", "bold");
-      doc.text(`Report #${index + 1}`, 14, y);
-      y += 6;
-
-      const caseType = report.cases?.[0]?.caseType?.toUpperCase() || 'CASES';
-      doc.setFont("helvetica", "bold");
-      doc.text(`SUMMARY CASE REPORTING FOR ${caseType} CASES:`, doc.internal.pageSize.width / 2, y, { align: "center" });
-
-      const tableBody = report.cases.map((c, i) => {
+      const criminalTableBody = criminalCases.map((c, i) => {
         const juryParts = (c.juryInfo || '').split(',');
         const feeParts = (c.costFineAmount || '').split(',');
-
-        const juryColumn = c.caseType === "Civil"
-          ? `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`
-          : `${juryParts[0] || 'NONE'}`;
 
         return [
           i + 1,
           c.caseTitle || "-",
           c.crimeOrAction || "-",
           c.disposition || "-",
-          juryColumn,
+          juryParts[0] || 'NONE',
           feeParts.join(' ') || '-',
           c.remarks || "-"
         ];
       });
 
       doc.autoTable({
-        startY: y + 5,
+        startY: y,
         head: [[
           "No.",
           "Case Title",
-          report.cases?.[0]?.caseType === "Civil" ? "Action" : "Crime",
+          "Crime",
           "Disposition",
-          "Jury Panel / Ref#",
-          "Fees / Receipt",
+          "Jury Info",
+          "Costs/Fees/Fines/ Amount and Receipt#",
           "Remarks"
         ]],
-        body: tableBody,
+        body: criminalTableBody,
         styles: {
           fontSize: 10,
           cellPadding: 3,
@@ -164,84 +169,156 @@ export default function ChiefReports() {
         },
         columnStyles: {
           0: { halign: 'center', cellWidth: 12 },
-          1: { halign: 'center', cellWidth: 40 },
-          2: { halign: 'center', cellWidth: 30 },
-          3: { halign: 'center', cellWidth: 30 },
-          4: { halign: 'center', cellWidth: 50 },
-          5: { halign: 'center', cellWidth: 40 },
-          6: { halign: 'center', cellWidth: 50 }
+        1: { halign: 'center', cellWidth: 40 },
+        2: { halign: 'center', cellWidth: 30 },
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
         }
       });
 
       y = doc.lastAutoTable.finalY + 15;
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
-    });
+    }
 
-    doc.save(`ChiefJustice_Returns_Reports_${selectedCourt}.pdf`);
-  };
+    // Civil Cases Section - Only show if there are civil cases
+    if (civilCases.length > 0) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("SUMMARY CASE REPORTING FOR CIVIL CASES:", doc.internal.pageSize.width / 2, y, { align: "center" });
+      y += 8;
 
-  const generateSinglePDF = (report) => {
-    const doc = new jsPDF('landscape');
-    let y = 20;
+      const civilTableBody = civilCases.map((c, i) => {
+        const juryParts = (c.juryInfo || '').split(',');
+        const feeParts = (c.costFineAmount || '').split(',');
 
-    doc.setFontSize(14);
+        return [
+          i + 1,
+          c.caseTitle || "-",
+          c.crimeOrAction || "-",
+          c.disposition || "-",
+          `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`,
+          feeParts.join(' ') || '-',
+          c.remarks || "-"
+        ];
+      });
+
+      doc.autoTable({
+        startY: y,
+        head: [[
+          "No.",
+          "Case Title",
+          "Action",
+          "Disposition",
+          "Jury Panel / Ref#",
+          "Costs/Fees/Fines/ Amount and Receipt#",
+          "Remarks"
+        ]],
+        body: civilTableBody,
+        styles: {
+          fontSize: 10,
+          cellPadding: 3,
+          valign: 'middle',
+          lineColor: [0, 0, 0],
+          lineWidth: 0.25
+        },
+        headStyles: {
+          fillColor: [30, 80, 200],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        columnStyles: {
+          0: { halign: 'center', cellWidth: 12 },
+        1: { halign: 'center', cellWidth: 40 },
+        2: { halign: 'center', cellWidth: 30 },
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
+        }
+      });
+
+      y = doc.lastAutoTable.finalY + 15;
+    }
+
+    if (y > 250) {
+      doc.addPage();
+      y = 20;
+    }
+  });
+
+  doc.save(`ChiefJustice_Returns_Reports_${selectedCourt}.pdf`);
+};
+
+const generateSinglePDF = (report) => {
+  const doc = new jsPDF('landscape');
+  let y = 20;
+
+  // Header Section
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, y, { align: "center" });
+  y += 8;
+  doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, y, { align: "center" });
+
+  // Report Info
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  y += 8;
+  doc.text(`COURT: ${report.circuitCourt || '-'}`, 14, y);
+  y += 8;
+  doc.text(`TERM: ${report.term || '-'} ${report.year || ''}`, 14, y);
+  y += 8;
+  doc.text(`JUDGE: ${report.judgeName || '-'}`, 14, y);
+  y += 8;
+  doc.text(`CLERK: ${report.submittedBy?.username || '-'}`, 14, y);
+  y += 8;
+  doc.text(`STATUS: ${report.chiefViewed ? 'APPROVED' : 'PENDING'}`, 14, y);
+
+  y += 10;
+  doc.setFont("helvetica", "bold");
+  doc.text(`Report Details`, 14, y);
+  y += 6;
+
+  // Separate cases by type
+  const criminalCases = report.cases?.filter(c => c.caseType === "Criminal") || [];
+  const civilCases = report.cases?.filter(c => c.caseType === "Civil") || [];
+
+  // Criminal Cases Section - Only show if there are criminal cases
+  if (criminalCases.length > 0) {
     doc.setFont("helvetica", "bold");
-    doc.text("JUDICIARY BRANCH OF GOVERNMENT", doc.internal.pageSize.width / 2, y, { align: "center" });
-    y += 8;
-    doc.text("“RETURNS TO ASSIGNMENT”", doc.internal.pageSize.width / 2, y, { align: "center" });
-
     doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
+    doc.text("SUMMARY CASE REPORTING FOR CRIMINAL CASES:", doc.internal.pageSize.width / 2, y, { align: "center" });
     y += 8;
-    doc.text(`COURT: ${report.circuitCourt || '-'}`, 14, y);
-    y += 8;
-    doc.text(`TERM: ${report.term || '-'} ${report.year || ''}`, 14, y);
-    y += 8;
-    doc.text(`JUDGE: ${report.judgeName || '-'}`, 14, y);
-    y += 8;
-    doc.text(`CLERK: ${report.submittedBy?.username || '-'}`, 14, y);
-    y += 8;
-    doc.text(`STATUS: ${report.chiefViewed ? 'APPROVED' : 'PENDING'}`, 14, y);
 
-    y += 10;
-    const caseType = report.cases?.[0]?.caseType?.toUpperCase() || 'CASES';
-    doc.setFont("helvetica", "bold");
-    doc.text(`SUMMARY CASE REPORTING FOR ${caseType} CASES:`, doc.internal.pageSize.width / 2, y, { align: "center" });
-
-    const tableBody = report.cases.map((c, i) => {
+    const criminalTableBody = criminalCases.map((c, i) => {
       const juryParts = (c.juryInfo || '').split(',');
       const feeParts = (c.costFineAmount || '').split(',');
-
-      const juryColumn = c.caseType === "Civil"
-        ? `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`
-        : `${juryParts[0] || 'NONE'}`;
 
       return [
         i + 1,
         c.caseTitle || "-",
         c.crimeOrAction || "-",
         c.disposition || "-",
-        juryColumn,
+        juryParts[0] || 'NONE',
         feeParts.join(' ') || '-',
         c.remarks || "-"
       ];
     });
 
     doc.autoTable({
-      startY: y + 5,
+      startY: y,
       head: [[
         "No.",
         "Case Title",
-        report.cases?.[0]?.caseType === "Civil" ? "Action" : "Crime",
+        "Crime",
         "Disposition",
-        "Jury Panel / Ref#",
-        "Fees / Receipt",
+        "Jury Info",
+        "Costs/Fees/Fines/ Amount and Receipt#",
         "Remarks"
       ]],
-      body: tableBody,
+      body: criminalTableBody,
       styles: {
         fontSize: 10,
         cellPadding: 3,
@@ -259,16 +336,77 @@ export default function ChiefReports() {
         0: { halign: 'center', cellWidth: 12 },
         1: { halign: 'center', cellWidth: 40 },
         2: { halign: 'center', cellWidth: 30 },
-        3: { halign: 'center', cellWidth: 30 },
-        4: { halign: 'center', cellWidth: 50 },
-        5: { halign: 'center', cellWidth: 40 },
-        6: { halign: 'center', cellWidth: 50 }
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
       }
     });
 
-    doc.save(`Returns_Report_${report.term}_${report.year}.pdf`);
-  };
+    y = doc.lastAutoTable.finalY + 15;
+  }
 
+  // Civil Cases Section - Only show if there are civil cases
+  if (civilCases.length > 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("SUMMARY CASE REPORTING FOR CIVIL CASES:", doc.internal.pageSize.width / 2, y, { align: "center" });
+    y += 8;
+
+    const civilTableBody = civilCases.map((c, i) => {
+      const juryParts = (c.juryInfo || '').split(',');
+      const feeParts = (c.costFineAmount || '').split(',');
+
+      return [
+        i + 1,
+        c.caseTitle || "-",
+        c.crimeOrAction || "-",
+        c.disposition || "-",
+        `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`,
+        feeParts.join(' ') || '-',
+        c.remarks || "-"
+      ];
+    });
+
+    doc.autoTable({
+      startY: y,
+      head: [[
+        "No.",
+        "Case Title",
+        "Action",
+        "Disposition",
+        "Jury Panel / Ref#",
+        "Costs/Fees/Fines/ Amount and Receipt#",
+        "Remarks"
+      ]],
+      body: civilTableBody,
+      styles: {
+        fontSize: 10,
+        cellPadding: 3,
+        valign: 'middle',
+        lineColor: [0, 0, 0],
+        lineWidth: 0.25
+      },
+      headStyles: {
+        fillColor: [30, 80, 200],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      columnStyles: {
+       0: { halign: 'center', cellWidth: 12 },
+        1: { halign: 'center', cellWidth: 40 },
+        2: { halign: 'center', cellWidth: 30 },
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
+      }
+    });
+  }
+
+  doc.save(`Returns_Report_${report.term}_${report.year}.pdf`);
+};
   const renderStatus = (report) => {
     if (report.rejected) return <span className="text-danger">Rejected</span>;
     if (report.chiefViewed) return <span className="text-success">Approved</span>;

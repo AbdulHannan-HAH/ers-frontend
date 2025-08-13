@@ -389,10 +389,10 @@ const handleFileDelete = async (fileUrl) => {
         0: { halign: 'center', cellWidth: 12 },
         1: { halign: 'center', cellWidth: 40 },
         2: { halign: 'center', cellWidth: 30 },
-        3: { halign: 'center', cellWidth: 30 },
-        4: { halign: 'center', cellWidth: 50 },
-        5: { halign: 'center', cellWidth: 40 },
-        6: { halign: 'center', cellWidth: 50 }
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
       },
       margin: { left: 10, right: 10 },
       tableWidth: 'wrap'
@@ -452,10 +452,10 @@ const handleFileDelete = async (fileUrl) => {
         0: { halign: 'center', cellWidth: 12 },
         1: { halign: 'center', cellWidth: 40 },
         2: { halign: 'center', cellWidth: 30 },
-        3: { halign: 'center', cellWidth: 30 },
-        4: { halign: 'center', cellWidth: 50 },
-        5: { halign: 'center', cellWidth: 40 },
-        6: { halign: 'center', cellWidth: 50 }
+        3: { halign: 'center', cellWidth: 60 },
+        4: { halign: 'center', cellWidth: 40 },
+        5: { halign: 'center', cellWidth: 30 },
+        6: { halign: 'center', cellWidth: 40 }
       },
       margin: { left: 10, right: 10 },
       tableWidth: 'wrap'
