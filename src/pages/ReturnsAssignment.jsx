@@ -243,6 +243,13 @@ export default function ReturnsAssignment() {
     }
   };
 const handleFileUpload = async () => {
+  const token = localStorage.getItem("token"); // Get token from localStorage
+
+  if (!token) {
+    toast.error("No token found. Please login again.");
+    return;
+  }
+
   if (!selectedFile) {
     toast.warning("Please select a file first");
     return;
@@ -254,6 +261,9 @@ const handleFileUpload = async () => {
 
   try {
     setUploading(true);
+    console.log("Uploading file:", selectedFile.name);
+    console.log("Token being used:", token);
+
     const res = await axios.post(
       "https://ers-backend-f.onrender.com/api/returns/upload",
       formData,
@@ -262,25 +272,24 @@ const handleFileUpload = async () => {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
+        timeout: 30000,
       }
     );
 
-    // Ensure the response contains the correct Cloudinary URL
-    if (res.data.file?.url) {
-      setForm(prev => ({
-        ...prev,
-        attachments: [...(prev.attachments || []), res.data.file]
-      }));
-      toast.success("File uploaded successfully");
-    } else {
-      toast.error("Invalid file response from server");
-    }
+    console.log("Upload response:", res.data);
+
+    setForm((prev) => ({
+      ...prev,
+      attachments: [...(prev.attachments || []), res.data.file],
+    }));
+    toast.success("File uploaded successfully");
+    setSelectedFile(null);
   } catch (err) {
     console.error("Upload error:", err);
+    console.error("Error response:", err.response);
     toast.error(err.response?.data?.error || "Failed to upload file");
   } finally {
     setUploading(false);
-    setSelectedFile(null);
   }
 };
   const handleFileDelete = async (fileUrl) => {
@@ -296,10 +305,10 @@ const handleFileUpload = async () => {
     }));
     toast.success("File deleted successfully");
   } catch (err) {
-    toast.error("Failed to delete file");
+    console.error("Delete error:", err);
+    toast.error(err.response?.data?.error || "Failed to delete file");
   }
 };
-
 
   const generatePDF = () => {
   if (form.cases.length === 0) {
@@ -716,45 +725,44 @@ const handleFileUpload = async () => {
       </button>
     </div>
 
-   {form.attachments?.length > 0 && (
-  <div className="mt-3">
-    <h6>Uploaded Files:</h6>
-    <div className="list-group">
-      {form.attachments.map((file, index) => {
-        // Ensure URL is properly formatted
-        const fileUrl = file.url?.startsWith('http') 
-          ? file.url 
-          : `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/raw/upload/${file.public_id || file.url}`;
-        
-        return (
-          <div key={index} className="list-group-item d-flex justify-content-between align-items-center">
-            <a 
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-decoration-none flex-grow-1"
-              style={{ cursor: 'pointer' }}
-              onClick={(e) => {
-                e.preventDefault();
-                window.open(fileUrl, '_blank');
-              }}
-            >
-              {file.originalname || file.filename || `File ${index + 1}`}
-            </a>
-            {!form.finalized && (
-              <button 
-                className="btn btn-sm btn-danger ms-2"
-                onClick={() => handleFileDelete(file.url)}
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
+    {form.attachments?.length > 0 && (
+      <div className="mt-3">
+        <h6>Uploaded Files:</h6>
+        <div className="list-group">
+          {form.attachments.map((file, index) => {
+            const fileUrl = file.url?.startsWith('http') 
+              ? file.url 
+              : `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/raw/upload/${file.public_id || file.url}`;
+            
+            return (
+              <div key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                <a 
+                  href={fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-decoration-none flex-grow-1"
+                  style={{ cursor: 'pointer' }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open(fileUrl, '_blank');
+                  }}
+                >
+                  {file.originalname || file.filename || `File ${index + 1}`}
+                </a>
+                {!form.finalized && (
+                  <button 
+                    className="btn btn-sm btn-danger ms-2"
+                    onClick={() => handleFileDelete(file.url)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    )}
   </div>
 </div>
         <div className="d-flex gap-3 justify-content-center mt-4">
