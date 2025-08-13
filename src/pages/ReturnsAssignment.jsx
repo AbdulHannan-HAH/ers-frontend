@@ -242,7 +242,14 @@ export default function ReturnsAssignment() {
       toast.error("❌ Failed to load report");
     }
   };
-const handleFileUpload = async () => {
+ const handleFileUpload = async () => {
+  const token = localStorage.getItem("token"); // ✅ Get token from localStorage
+
+  if (!token) {
+    toast.error("No token found. Please login again.");
+    return;
+  }
+
   if (!selectedFile) {
     toast.warning("Please select a file first");
     return;
@@ -254,33 +261,35 @@ const handleFileUpload = async () => {
 
   try {
     setUploading(true);
+    console.log("Uploading file:", selectedFile.name);
+    console.log("Token being used:", token);
+
     const res = await axios.post(
       "https://ers-backend-f.onrender.com/api/returns/upload",
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // ✅ Token attached
         },
+        timeout: 30000,
       }
     );
 
-    // Ensure the response contains the correct Cloudinary URL
-    if (res.data.file?.url) {
-      setForm(prev => ({
-        ...prev,
-        attachments: [...(prev.attachments || []), res.data.file]
-      }));
-      toast.success("File uploaded successfully");
-    } else {
-      toast.error("Invalid file response from server");
-    }
+    console.log("Upload response:", res.data);
+
+    setForm((prev) => ({
+      ...prev,
+      attachments: [...(prev.attachments || []), res.data.file],
+    }));
+    toast.success("File uploaded successfully");
+    setSelectedFile(null);
   } catch (err) {
     console.error("Upload error:", err);
+    console.error("Error response:", err.response);
     toast.error(err.response?.data?.error || "Failed to upload file");
   } finally {
     setUploading(false);
-    setSelectedFile(null);
   }
 };
   const handleFileDelete = async (fileUrl) => {
