@@ -329,7 +329,7 @@ const handleFileUpload = async () => {
 
   let startY = 74; // Initial Y position for tables
 
-  // Criminal Cases Section
+  // Criminal Cases Section - Only show if there are criminal cases
   if (criminalCases.length > 0) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
@@ -389,10 +389,10 @@ const handleFileUpload = async () => {
       tableWidth: 'wrap'
     });
 
-    startY = doc.lastAutoTable.finalY + 10;
+    startY = doc.lastAutoTable.finalY + 15;
   }
 
-  // Civil Cases Section
+  // Civil Cases Section - Only show if there are civil cases
   if (civilCases.length > 0) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
@@ -403,14 +403,12 @@ const handleFileUpload = async () => {
       const juryParts = (c.juryInfo || '').split(',');
       const feeParts = (c.costFineAmount || '').split(',');
 
-      const juryColumn = `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`;
-
       return [
         i + 1,
         c.caseTitle || "-",
         c.crimeOrAction || "-",
         c.disposition || "-",
-        juryColumn,
+        `${juryParts[0] || 'NONE'} | ${juryParts[1] || 'NONE'}`,
         feeParts.join(' ') || '-',
         c.remarks || "-"
       ];
