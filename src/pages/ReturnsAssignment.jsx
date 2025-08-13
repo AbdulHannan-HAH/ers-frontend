@@ -243,7 +243,7 @@ export default function ReturnsAssignment() {
     }
   };
 const handleFileUpload = async () => {
-  const token = localStorage.getItem("token"); // Get token from localStorage
+  const token = localStorage.getItem("token");
 
   if (!token) {
     toast.error("No token found. Please login again.");
@@ -261,9 +261,6 @@ const handleFileUpload = async () => {
 
   try {
     setUploading(true);
-    console.log("Uploading file:", selectedFile.name);
-    console.log("Token being used:", token);
-
     const res = await axios.post(
       "https://ers-backend-f.onrender.com/api/returns/upload",
       formData,
@@ -276,17 +273,22 @@ const handleFileUpload = async () => {
       }
     );
 
-    console.log("Upload response:", res.data);
-
-    setForm((prev) => ({
-      ...prev,
-      attachments: [...(prev.attachments || []), res.data.file],
-    }));
-    toast.success("File uploaded successfully");
-    setSelectedFile(null);
+    if (res.data.file?.url) {
+      setForm(prev => ({
+        ...prev,
+        attachments: [...(prev.attachments || []), {
+          ...res.data.file,
+          // Ensure we have originalname for display
+          originalname: selectedFile.name
+        }]
+      }));
+      toast.success("File uploaded successfully");
+      setSelectedFile(null);
+    } else {
+      toast.error("Invalid file response from server");
+    }
   } catch (err) {
     console.error("Upload error:", err);
-    console.error("Error response:", err.response);
     toast.error(err.response?.data?.error || "Failed to upload file");
   } finally {
     setUploading(false);
