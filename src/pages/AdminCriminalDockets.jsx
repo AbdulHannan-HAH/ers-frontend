@@ -69,8 +69,7 @@ export default function AdminCriminalDockets() {
   const confirmReject = async () => {
     try {
       await axios.patch(
-        `  https://ers-backend-f.onrender.com
-/api/criminal-dockets/admin/reject/${rejectModal.docketId}`,
+        `  https://ers-backend-f.onrender.com/api/criminal-dockets/admin/reject/${rejectModal.docketId}`,
         { reason: rejectModal.reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
