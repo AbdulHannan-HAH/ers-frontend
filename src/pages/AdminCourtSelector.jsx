@@ -126,12 +126,7 @@ export default function AdminCourtSelector() {
             <button className="court-btn" onClick={() => handleSelect(court)}>
               {court}
             </button>
-            <button
-              className="btn btn-sm btn-danger ms-2"
-              onClick={() => handleDeleteCourt(i)}
-            >
-              🗑
-            </button>
+           
           </div>
         ))}
       </div>
